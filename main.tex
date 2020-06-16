@@ -1,6 +1,12 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
+\usepackage{nomencl}
+\makenomenclature
+
+\usepackage{amsmath}
+\usepackage{parskip}
+
 \title{Euler Equation Jacobians}
 \author{J Hope-Collins}
 \date{June 2020}
@@ -9,6 +15,522 @@
 
 \maketitle
 
-\section{Introduction}
+%-----------------------------------------------------------------------------
+
+\printnomenclature
+\nomenclature{$u$}{Velocity in x}
+\nomenclature{$v$}{Velocity in y}
+\nomenclature{$\rho u$}{Momentum in x}
+\nomenclature{$\rho v$}{Momentum in y}
+\nomenclature{$k$}{Specific kinetic energy}
+
+\nomenclature{$e$}{Specific total energy}
+\nomenclature{$h$}{Specific total enthalpy}
+\nomenclature{$e^s$}{Specific internal energy}
+\nomenclature{$h^s$}{Specific internal enthalpy}
+
+\nomenclature{$\rho$}{Density}
+\nomenclature{$p$}{Pressure}
+\nomenclature{$T$}{Temperature}
+\nomenclature{$s$}{Entropy}
+\nomenclature{$a$}{Speed of sound}
+
+\nomenclature{$\gamma$}{Ratio of specific heat capacities}
+\nomenclature{$R$}{Gas constant}
+\nomenclature{$C_p$}{Specific heat capacity at constant pressure}
+\nomenclature{$C_v$}{Specific heat capacity at constant volume}
+
+\nomenclature{$q^c$}{Variables in conserved basis}
+\nomenclature{$q^p$}{Variables in primitive basis}
+\nomenclature{$q^v$}{Variables in viscous basis}
+\nomenclature{$q^s$}{Variables in symmetry basis}
+
+%-----------------------------------------------------------------------------
+
+\section{Useful Relations}
+\begin{equation*}
+    p = \rho R T
+\end{equation*}
+
+\begin{equation*}
+    a^2 = \gamma R T = \gamma p / \rho
+\end{equation*}
+
+\begin{equation*}
+    k = \frac{1}{2} ( u^2 + v^2 )
+\end{equation*}
+
+\begin{equation*}
+    h^s = e^s + p/\rho,
+    \quad \quad
+    h = e + p/\rho
+\end{equation*}
+
+\begin{equation*}
+    e^s = C_v T,
+    \quad \quad
+    h^s = C_p T,
+\end{equation*}
+
+\begin{equation*}
+    e = e^s + k,
+    \quad \quad
+    h = h^s + k,
+\end{equation*}
+
+\begin{equation*}
+    \rho e = \frac{p}{\gamma-1} + \rho k,
+    \quad \quad
+    \rho h = \frac{\gamma p}{\gamma-1} + \rho k,
+\end{equation*}
+
+\begin{equation*}
+    s = C_v ln\bigg(\frac{p}{\rho^{\gamma}}\bigg)
+\end{equation*}
+
+\begin{equation*}
+    \gamma = \frac{C_p}{C_v},
+    \quad \quad
+    R = C_p - C_v
+\end{equation*}
+
+\begin{equation*}
+    C_v = \frac{R}{\gamma -1},
+    \quad \quad
+    C_p = \frac{\gamma R}{\gamma -1},
+\end{equation*}
+
+%-----------------------------------------------------------------------------
+
+\newpage
+\section{Phase space bases}
+\begin{tabular}{l l l l l l l}
+     Conserved: & $($ & $\rho,$ & $\rho u,$ & $\rho v,$ & $\rho E$ & $)$ \\
+     Primitive: & $($ & $\rho,$ & $u,     $ & $v,     $ & $p$      & $)$ \\
+     Viscous:   & $($ & $p,   $ & $u,     $ & $v,     $ & $T$      & $)$ \\
+     Symmetry:  & $($ & $p,   $ & $u,     $ & $v,     $ & $S$      & $)$ \\
+     Convected: & $($ & $\rho,$ & $\rho u,$ & $\rho v,$ & $\rho h$ & $)$ \\
+     AUSM:      & $($ & $p,   $ & $u,     $ & $v,     $ & $h$      & $)$
+\end{tabular}
+
+%-----------------------------------------------------------------------------
+
+\section{Phase Space Jacobians}
+This section details transformations of variable sets between different bases of the ideal gas phase space.
+First, derivative vectors of individual quantities with respect to particular bases are given.
+These derivative vectors are then combined into Jacobian matrices for (linear) transformations between bases.
+
+\subsection{Derivatives}
+
+%-----------------------------------------------------------------------------
+
+\subsubsection{Derivatives wrt Conserved basis}
+
+%--------------
+\textbf{Velocity in $x$:}
+\begin{equation*}
+    \frac{\partial u}{ \partial q^c} = \frac{1}{\rho}\big( -u,\, 1,\, 0,\, 0 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho u & = \rho du + u d\rho \\
+        du      & = \frac{-ud\rho + d\rho u}{\rho}
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Velocity in $y$:}
+\begin{equation*}
+    \frac{\partial v}{ \partial q^c} = \frac{1}{\rho}\big( -v,\, 0,\, 1,\, 0 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho v & = \rho dv + v d\rho \\
+        dv      & = \frac{-vd\rho + d\rho v}{\rho}
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Temperature:}
+\begin{equation*}
+    \frac{\partial T}{\partial q^c} = \frac{1}{\rho C_v}\big( k - C_v T,\, -u,\, -v,\, 1 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        \rho e & = \rho C_v T + \rho k \\
+       d\rho e & = \rho C_v dT + C_v T d\rho + d\rho k \\
+               & = \rho C_v dT + C_v T d\rho - kd\rho + ud\rho u + vd\rho v \\
+   \rho C_v dT & = (k - C_v T)d\rho - ud\rho u - vd\rho v + d\rho e
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Pressure:}
+\begin{equation*}
+    \frac{\partial p}{\partial q^c} = (\gamma-1)\big(k,\, -u,\, -v,\, 1 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+         \rho e  & = \frac{p}{\gamma-1} + \rho k \\
+         d\rho e & = \frac{dp}{\gamma-1} + d\rho k \\
+         \frac{dp}{\gamma-1} & = kd\rho - ud\rho u - vd\rho v + d\rho e
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Entropy:}
+\begin{equation*}
+    \frac{\partial s}{\partial q^c} = (\gamma-1)\big(k-a^2,\, -u,\, -v,\, 1 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        ds & = dp - a^2 d\rho
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Total enthalpy:}
+\begin{equation*}
+    \frac{\partial \rho h}{\partial q^c} = (\gamma-1)\big(k,\, -u,\, -v,\, \frac{\gamma}{\gamma-1} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        \rho h  & = \rho e + p \\
+        d\rho h & = d\rho e + dp
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Specific total enthalpy:}
+\begin{equation*}
+    \frac{\partial h}{\partial q^c} = \frac{\gamma-1}{\rho}\big(k-h,\, -u,\, -v,\, \frac{\gamma}{\gamma-1} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho h & = \rho dh + h d\rho \\
+        dh      & = \frac{d\rho h - hd\rho}{\rho}
+    \end{split}
+\end{equation*}
+
+%-----------------------------------------------------------------------------
+
+\subsubsection{Derivatives wrt Primitive basis}
+
+%--------------
+\textbf{Momentum in $x$:}
+\begin{equation*}
+    \frac{\partial \rho u}{\partial q^p} = \big( u,\, \rho,\, 0,\, 0 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho u = \rho du + ud\rho
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Momentum in $y$:}
+\begin{equation*}
+    \frac{\partial \rho v}{\partial q^p} = \big( v,\, 0,\, \rho,\, 0 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho v = \rho dv + vd\rho
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Temperature:}
+\begin{equation*}
+    \frac{\partial T}{\partial q^p} = T\big(-\frac{1}{\rho},\, 0,\, 0,\, \frac{1}{p} \big)
+\end{equation*}
+From
+\begin{equation*}
+    \begin{split}
+        p  & = \rho R T \\
+        dp & = \rho R dT + R T d\rho \\
+        \frac{dp}{p} & = \frac{dT}{T} + \frac{d\rho}{\rho} \\
+        \frac{dT}{T} & = -\frac{d\rho}{\rho} + \frac{dp}{p}
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Total energy:}
+\begin{equation*}
+    \frac{\partial \rho e}{\partial q^p} = \big( k,\, \rho u,\, \rho v,\, \frac{1}{\gamma-1} \big)
+\end{equation*}
+From
+\begin{equation*}
+    \begin{split}
+        \rho e  & = \frac{p}{\gamma-1} + \rho k \\
+        d\rho e & = \frac{dp}{\gamma-1} + kd\rho + \rho dk \\
+        d\rho e & = kd\rho + \rho u du + \rho v dv + \frac{dp}{\gamma-1}
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Entropy:}
+\begin{equation*}
+    \frac{\partial s}{\partial q^p} = \big(-a^2,\, 0,\, 0,\, 1 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        ds & = dp - a^2d\rho
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Total enthalpy:}
+\begin{equation*}
+    \frac{\partial \rho h}{\partial q^p} = \big( k,\, \rho u,\, \rho v,\, \frac{\gamma}{\gamma-1} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        \rho h  & = \frac{\gamma p}{\gamma-1} + \rho k \\
+        d\rho h & = \frac{\gamma}{\gamma-1} dp + \rho dk + kd\rho \\
+        d\rho h & = kd\rho + \rho udu + \rho vdv + \frac{\gamma}{\gamma-1} dp
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Specific total enthalpy:}
+\begin{equation*}
+    \frac{\partial h}{\partial q^p} = \big( k-h,\, \rho u,\, \rho v,\, \frac{\gamma}{\gamma-1} \big)/\rho
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho h & = \rho dh + h d\rho \\
+        dh      & = \frac{d\rho h - hd\rho}{\rho}
+    \end{split}
+\end{equation*}
+
+%-----------------------------------------------------------------------------
+
+\subsubsection{Derivatives wrt Viscous basis}
+
+%--------------
+\textbf{Density:}
+\begin{equation*}
+    \frac{\partial \rho}{\partial q^v} = \rho\big( \frac{1}{p},\, 0,\, 0,\, -\frac{1}{T} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        \frac{dp}{p}       & = \frac{d\rho}{\rho} + \frac{dT}{T} \\
+        d\rho & = \frac{\rho}{p}dp - \frac{\rho}{T}dT
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Momentum in $x$:}
+\begin{equation*}
+    \frac{\partial \rho u}{\partial q^v} = \rho u \big( \frac{1}{p},\, \frac{1}{u},\, 0,\, -\frac{1}{T} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho u & = \rho du + ud\rho \\
+        d\rho & = \frac{\rho}{p}dp - \frac{\rho}{T}dT \\
+        d\rho u & = \rho du + \frac{\rho u}{p} dp - \frac{\rho u}{T} dT
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Momentum in $y$:}
+\begin{equation*}
+    \frac{\partial \rho v}{\partial q^v} = \rho v \big( \frac{1}{p},\, 0,\, \frac{1}{v},\, -\frac{1}{T} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho v & = \rho dv + vd\rho \\
+        d\rho & = \frac{\rho}{p}dp - \frac{\rho}{T}dT \\
+        d\rho v & = \rho dv + \frac{\rho v}{p} dp - \frac{\rho v}{T} dT
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Total energy:}
+\begin{equation*}
+    \frac{\partial \rho e}{\partial q^v} = \rho \big( \frac{e}{p},\, u,\, v,\, -\frac{k}{T} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        \rho e  & = \frac{p}{\gamma-1} + \rho k \\
+        d\rho e & = \frac{1}{\gamma-1}dp + \rho u du + \rho v dv + kd\rho \\
+        d\rho & = \frac{\rho}{p}dp - \frac{\rho}{T}dT \\
+        d\rho e & = \big(\frac{1}{\gamma-1} + \frac{\rho k}{p} \big)dp + \rho u du + \rho v dv - \frac{\rho k}{T}dT
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Entropy:}
+\begin{equation*}
+    \frac{\partial s}{\partial q^v} = \big( (1-\gamma),\, 0,\, 0,\, \rho \gamma R \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        ds & = dp - a^2 d\rho \\
+        d\rho & = \frac{\rho}{p}dp - \frac{\rho}{T}dT \\
+        ds & = dp - a^2\big( \frac{\rho}{p}dp - \frac{\rho}{T}dT \big) \\
+           & = \big(1 - \frac{\rho a^2}{p}\big)dp + \rho \gamma R dT
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Total enthalpy:}
+\begin{equation*}
+    \frac{\partial \rho h}{\partial q^v} = \rho \big( \frac{h}{p},\, u,\, v,\, \frac{-k}{T} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        \rho h  & = \rho e + p \\
+        d\rho h & = d\rho e + dp \\
+        d\rho h & = \frac{1}{p} \big(\frac{\gamma p}{\gamma-1} + \rho k \big)dp + \rho u du + \rho v dv - \frac{\rho k}{T}dT
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Specific total enthalpy:}
+\begin{equation*}
+    \frac{\partial h}{\partial q^v} = \big( 0\, u,\, v,\, Cp \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        h  & = C_p T + k \\
+        dh & = C_p dT + dk \\
+        dh & = udu + vdv + C_p dT
+    \end{split}
+\end{equation*}
+
+%-----------------------------------------------------------------------------
+
+\subsubsection{Derivatives wrt Symmetry basis}
+
+%--------------
+\textbf{Density:}
+\begin{equation*}
+    \frac{\partial \rho}{\partial q^s} = \frac{1}{a^2} \big( 1,\, 0,\, 0,\, -1 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        ds & = dp - a^2 d\rho \\
+        a^2 d\rho & = dp - ds
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Momentum in $x$:}
+\begin{equation*}
+    \frac{\partial \rho u}{\partial q^s} = \frac{1}{a^2} \big( u,\, \rho a^2,\, 0,\, -u \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho u & = \rho du + ud\rho \\
+                & = \frac{u}{a^2}dp + \rho du - \frac{u}{a^2}ds
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Momentum in $y$:}
+\begin{equation*}
+    \frac{\partial \rho v}{\partial q^s} = \frac{1}{a^2} \big( v,\, 0,\, \rho a^2,\, -v \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        d\rho v & = \rho dv + vd\rho \\
+                & = \frac{v}{a^2}dp + \rho dv - \frac{v}{a^2}ds
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Temperature:}
+\begin{equation*}
+    \frac{\partial T}{\partial q^s} = \frac{1}{\rho \gamma R} \big( (\gamma-1),\, 0,\, 0,\, 1 \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        dT & = \frac{T}{p}dp - \frac{T}{\rho}d\rho \\
+           & = \big( \frac{T}{p} - \frac{T}{\rho a^2} \big)dp + \frac{T}{a^2}ds \\
+           & = \frac{\gamma-1}{\rho \gamma R}dp + \frac{1}{\rho \gamma R}ds
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Total energy:}
+\begin{equation*}
+    \frac{\partial \rho e}{\partial q^s} = \big( \frac{1}{\gamma-1} + \frac{k}{a^2},\, \rho u,\, \rho v,\, -\frac{k}{a^2} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        \rho e  & = \frac{p}{\gamma-1} + \rho k \\
+        d\rho e & = \frac{dp}{\gamma-1} + \rho u du + \rho v dv + kd\rho \\
+        d\rho   & = \frac{dp}{a^2} - \frac{ds}{a^2} \\
+        d\rho e & = \big(\frac{1}{\gamma-1} + \frac{k}{a^2}\big)dp + \rho u du + \rho v dv - \frac{k}{a^2}ds
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Total enthalpy:}
+\begin{equation*}
+    \frac{\partial \rho h}{\partial q^s} = \big( \frac{\gamma}{\gamma-1} + \frac{k}{a^2},\, \rho u,\, \rho v,\, -\frac{k}{a^2} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        \rho h  & = \frac{\gamma p}{\gamma-1} + \rho k \\
+        d\rho h & = \frac{\gamma dp}{\gamma-1} + \rho u du + \rho v dv + kd\rho \\
+        d\rho   & = \frac{dp}{a^2} - \frac{ds}{a^2} \\
+        d\rho h & = \big(\frac{\gamma}{\gamma-1} + \frac{k}{a^2}\big)dp + \rho u du + \rho v dv - \frac{k}{a^2}ds
+    \end{split}
+\end{equation*}
+
+%--------------
+\textbf{Specific total enthalpy:}
+\begin{equation*}
+    \frac{\partial h}{\partial q^s} = \frac{1}{\rho} \big( 1,\, \rho u,\, \rho v,\, \frac{1}{\gamma-1} \big)
+\end{equation*}
+From:
+\begin{equation*}
+    \begin{split}
+        h  & = C_p T + k \\
+        dh & = C_p dT + udu + vdv \\
+        dT & = \frac{\gamma-1}{\rho \gamma R}dp + \frac{1}{\rho \gamma R}ds \\
+        dh & = \frac{C_p (\gamma-1)}{\rho \gamma R}dp + udu + vdv + \frac{C_p}{\rho \gamma R}ds \\
+        dh & = \frac{dp}{\rho} + udu + vdv + \frac{ds}{\rho(\gamma-1)}
+    \end{split}
+\end{equation*}
+
+%-----------------------------------------------------------------------------
+
+\subsection{Jacobians}
+
+%-----------------------------------------------------------------------------
+
+\subsubsection{Conserved wrt Symmetry}
+
+%-----------------------------------------------------------------------------
+
+\subsubsection{Symmetry wrt Conserved}
 
 \end{document}
